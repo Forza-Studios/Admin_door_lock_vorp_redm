@@ -70,6 +70,8 @@ end)
 
 CreateThread(function()
     CreatePrompt()
+    PromptSetVisible(prompt, false)
+    PromptSetEnabled(prompt, false)
     TriggerServerEvent('coi_door_lock:checkAdmin')
 
     while true do
@@ -89,6 +91,9 @@ CreateThread(function()
                 PromptSetVisible(prompt, false)
                 wait = 500
             end
+        else
+            PromptSetEnabled(prompt, false)
+            PromptSetVisible(prompt, false)
         end
         Wait(wait)
     end
