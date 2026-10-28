@@ -7,13 +7,16 @@ author '_forza'
 lua54 'yes'
 description 'Admin-only door open/close prompt'
 
-shared_script 'config.lua'
+shared_scripts {
+    'config.lua',
+    'door_hashes.lua' -- shared so the server can store door coords/model in the DB
+}
 
 client_scripts {
-    'door_hashes.lua',
     'client.lua'
 }
 
 server_scripts {
+    '@oxmysql/lib/MySQL.lua',
     'server.lua'
 }

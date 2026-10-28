@@ -54,18 +54,40 @@ local function GetDoorGroup(target)
     return hashes
 end
 
+local function ApplyStates(states)
+    if type(states) ~= 'table' then return end
+    for hash, open in pairs(states) do
+        if type(hash) == 'number' then
+            doorStates[hash] = open
+            ApplyDoor(hash, open)
+        end
+    end
+end
+
 RegisterNetEvent('coi_door_lock:setAdmin', function(admin, states)
     isAdmin = admin
-    doorStates = states or {}
-    for hash, open in pairs(doorStates) do ApplyDoor(hash, open) end
+    ApplyStates(states)
+end)
+
+-- Restored (persisted) states pushed by the server once the database is ready
+RegisterNetEvent('coi_door_lock:applyStates', function(states)
+    ApplyStates(states)
 end)
 
 RegisterNetEvent('coi_door_lock:apply', function(hashes, open)
     for _, hash in ipairs(hashes) do
-        doorStates[hash] = open or nil
+        doorStates[hash] = open
         ApplyDoor(hash, open)
     end
     PlayClick()
+end)
+
+-- Doors reset when the player respawns / changes character, so re-sync the saved states
+AddEventHandler('playerSpawned', function()
+    CreateThread(function()
+        Wait(1500)
+        TriggerServerEvent('coi_door_lock:checkAdmin')
+    end)
 end)
 
 CreateThread(function()
